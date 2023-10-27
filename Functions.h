@@ -59,8 +59,8 @@ vector<std::complex<double>> dft(vector<std::complex<double>> &x) {
 
 }
 
-//FFT of radix 2 vectors : Divide and Conquer
-vector<std::complex<double>> fft_rdx2 (vector<std::complex<double>> &x)
+//FFT of radix 2 vectors Cooley and Tukey : Divide and Conquer
+vector<std::complex<double>> fft_rdx2_CT (vector<std::complex<double>> &x)
 {
     //Get size
     long N = x.size();
@@ -85,8 +85,8 @@ vector<std::complex<double>> fft_rdx2 (vector<std::complex<double>> &x)
     }
 
     //Recursive call until single element FFT
-    vector<std::complex<double>> evenFFT = fft_rdx2(even);
-    vector<std::complex<double>> oddFFT = fft_rdx2(odd);
+    vector<std::complex<double>> evenFFT = fft_rdx2_CT(even);
+    vector<std::complex<double>> oddFFT = fft_rdx2_CT(odd);
 
     //Build DFT vector
 
@@ -109,8 +109,9 @@ vector<std::complex<double>> fft_rdx2 (vector<std::complex<double>> &x)
 
 }
 
-//FFT algorithm with zero padding
-vector<std::complex<double>> fft(vector<std::complex<double>> &x)
+//FFT algorithm with zero padding: pads the end of the signal until it
+//has lenght equal to a power of 2 and takes Cooley and Tukey FFT.
+vector<std::complex<double>> fft_padded(vector<std::complex<double>> &x)
 {
     //Get next power of 2 relative to x's length
     int nextPowerOf2 = pow(2, ceil((float)log2(x.size())));
@@ -130,8 +131,18 @@ vector<std::complex<double>> fft(vector<std::complex<double>> &x)
     }
     cout << "}" << endl;
     
-    return fft_rdx2(zero_padded);
+    //Build return vector
+    vector<std::complex<double>> X_k;
+    
+    vector<std::complex<double>> rdx2 = fft_rdx2_CT(zero_padded);
+    
+    for (int i = 0; i < x.size(); i++)
+    {
+        X_k.push_back(rdx2.at(i));
+    }
+    
+    return X_k;
+    
 }
 
 #endif /* Functions_h */
-
