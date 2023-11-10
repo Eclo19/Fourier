@@ -18,7 +18,7 @@
 using namespace std;
  
 
-//Take the DFT of vector x
+//Function tha directly computes the DFT of vector x
 vector<std::complex<double>> dft(vector<std::complex<double>> &x) {
     
     //DTF{x[n]} = \sum_(k = 0, k = N-1) x[n]*exp(-i*2*pi*n*k/N)
@@ -35,7 +35,7 @@ vector<std::complex<double>> dft(vector<std::complex<double>> &x) {
     //loop through all k instances
     for (int k = 0; k < N; k++)
     {
-        //loop through all k instances
+        //loop through all n instances
         for (int n = 0; n < N; n++)
         {
             //Add to sum vec
@@ -124,13 +124,6 @@ vector<std::complex<double>> fft_padded(vector<std::complex<double>> &x)
         zero_padded.push_back(0);
     }
     
-    cout << "Zero padded vector: { ";
-    for (int i = 0; i < zero_padded.size(); i++)
-    {
-        cout << zero_padded.at(i) << " " ;
-    }
-    cout << "}" << endl;
-    
     //Build return vector
     vector<std::complex<double>> X_k;
     
@@ -144,5 +137,75 @@ vector<std::complex<double>> fft_padded(vector<std::complex<double>> &x)
     return X_k;
     
 }
+
+//INVERSE FFT/ DFT
+
+vector<std::complex<double>> idft(vector<std::complex<double>> &X) {
+    
+    //DTF{x[n]} = \sum_(k = 0, k = N-1) x[n]*exp(-i*2*pi*n*k/N)
+    
+    //Get size
+    long N = X.size();
+    
+    //Create vector that contains all k values for one n to be summed
+    vector<std::complex<double>> toBeSummed;
+    
+    //Vector X_k is the DFT{x}
+    vector<std::complex<double>> x_t;
+    
+    //loop through all k instances
+    for (int k = 0; k < N; k++)
+    {
+        //loop through all n instances
+        for (int n = 0; n < N; n++)
+        {
+            //Add to sum vec
+            toBeSummed.push_back( X.at(n) * polar(1.0, (+1)*2*M_PI*n*k/N) / static_cast<double>(N));
+        }
+        //Go through toBeSummed and sum all values into sum variable
+        complex<double> sum(0.0, 0.0);
+        for (int n = 0; n < N; n++)
+        {
+            sum += toBeSummed.at(n);
+        }
+        //Add value of DFT corresponding to n
+        x_t.push_back(sum);
+        
+        //Restart sum variables
+        sum = 0;
+        toBeSummed.clear();
+    }
+    
+  return x_t;
+
+}
+
+//IFFT of radix 2 vectors Cooley and Tukey : Divide and Conquer
+vector<std::complex<double>> ifft_rdx2_CT (vector<std::complex<double>> &X)
+{
+    long N = X.size();
+    if (N == 1) {
+        // If the vector has size 1, return it as is
+        return X;
+    }
+
+    // Conjugate the input vector
+    std::vector<std::complex<double>> X_conj(N);
+    for (int i = 0; i < N; ++i) {
+        X_conj[i] = conj(X[i]);
+    }
+
+    // Calculate the FFT of the conjugated vector
+    std::vector<std::complex<double>> y_conj = fft_rdx2_CT(X_conj);
+
+    // Conjugate the FFT result and normalize
+    for (int i = 0; i < N; ++i) {
+        y_conj[i] = conj(y_conj[i]) / static_cast<double>(N);
+    }
+
+    return y_conj;
+}
+
+
 
 #endif /* Functions_h */
