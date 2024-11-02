@@ -14,28 +14,15 @@ This repository contains a C++ implementation of various algorithms related to t
 
 - **Inverse FFT**: Computes the inverse FFT using a conjugate and normalization method.
 
-## Usage
+## Testing
 
-To use the functions defined in `Functions.h`, include the header file in your C++ project. Below is a simple example demonstrating how to compute the DFT and FFT of a sample signal:
+The repository includes a comprehensive testing framework implemented in `tests.cpp`. It utilizes the `unit_test_framework.h`, which was provided by EECS faculty from the University of Michigan for EECS 280 FA 2022. EECS 280 has a website with several free resources for algorithms and data structures [here](https://eecs280.org/).
 
-```cpp
-#include "Functions.h"
+### Test Functions
 
-int main() {
-    // Sample input signal as a vector of complex numbers
-    std::vector<std::complex<double>> signal = {1, 2, 3, 4};
-    
-    // Compute Discrete Fourier Transform (DFT)
-    auto dft_result = dft(signal);
-    
-    // Compute Fast Fourier Transform (FFT)
-    auto fft_result = fft_rdx2_CT(signal);
-    
-    // Compute Inverse Discrete Fourier Transform (IDFT)
-    auto idft_result = idft(dft_result);
-    
-    // Compute Inverse FFT
-    auto ifft_result = ifft_rdx2_CT(fft_result);
-    
-    return 0;
-}
+- **`assert_dft_fft`**: Validates that the results of DFT and FFT are approximately equal, asserting their values up to 14 decimal places.
+
+- **`time_compare`**: Measures and compares the execution time for DFT and FFT on a given input vector, printing out the time taken for both algorithms.
+
+- **`compare_vals`**: Displays the computed values of DFT and FFT for visual comparison.
+
